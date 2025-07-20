@@ -6,10 +6,14 @@
 </head>
 <body>
     <div class="container">
+        <div class="page-header">
+            <h1>Análise Global de Desastres Naturais</h1>
+            <p>Explore dados de desastres naturais por país. Clique em qualquer país para visualizar estatísticas e executar consultas específicas.</p>
+        </div>
         <div class="instructions">
             <h3>📋 Como usar o mapa:</h3>
             <p><strong>Clique em qualquer país</strong> para ver as consultas disponíveis para aquele país específico.</p>
-            <p>O popup mostrará todas as 10 consultas possíveis com seus respectivos endpoints e parâmetros.</p>
+            <p>No popup é possível executar as consultas ao clicar em uma delas.</p>
         </div>
         
         {{ plotly_html | safe }}

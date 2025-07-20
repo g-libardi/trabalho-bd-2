@@ -30,19 +30,18 @@ def mapa_desastres_por_pais(request: Request, db: couchdb.Database = Depends(get
         locationmode="country names",
         color="Disaster_Count",
         color_continuous_scale="Reds",
-        title="Número de Desastres Naturais por País",
         labels={"Disaster_Count": "Número de Desastres", "Country": "País"}
     )
     
     # Configurar o layout do mapa
     fig.update_layout(
-        title_x=0.5,
-        title_font_size=20,
         geo=dict(
             showframe=False,
             showcoastlines=True,
             projection_type='equirectangular'
-        )
+        ),
+        height=700,
+        margin=dict(l=0, r=0, t=0, b=0)
     )
     
     # Gerar HTML do Plotly
