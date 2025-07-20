@@ -113,6 +113,12 @@ async function openPopup(countryName) {
             </div>
         `;
         
+        // Voltar ao topo da seção de consultas (agora que ela existe)
+        const queriesSection = popup.querySelector('.queries-section');
+        if (queriesSection) {
+            queriesSection.scrollTop = 0;
+        }
+        
     } catch (error) {
         queryList.innerHTML = '<div class="error">Erro ao carregar dados do país. Tente novamente.</div>';
         console.error('Erro ao carregar dados:', error);
@@ -206,6 +212,12 @@ function showQueryResult(title, data) {
     `;
     
     document.body.appendChild(modal);
+    
+    // Voltar ao topo do modal
+    const resultContent = modal.querySelector('.result-content');
+    if (resultContent) {
+        resultContent.scrollTop = 0;
+    }
 }
 
 // Função para fechar o popup
