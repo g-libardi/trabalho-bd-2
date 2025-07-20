@@ -6,7 +6,15 @@ Repositório para análise e consulta de desastres naturais utilizando FastAPI, 
 
 - `main.py` — Ponto de entrada da API FastAPI.
 - `queries_router.py` — Rotas de consulta à base de dados.
+- `map_router.py` — Rotas para visualizações de mapa.
 - `deps.py` — Dependências e utilitários para injeção de dependências.
+- `queries/` — Módulo separado para funções de consulta:
+  - `queries_module.py` — Funções de consulta à base de dados.
+  - `__init__.py` — Exportações do módulo.
+- `templates/` — Templates HTML e arquivos estáticos:
+  - `map.html` — Template para a página do mapa.
+  - `static/css/map.css` — Estilos CSS para o mapa.
+  - `static/js/map.js` — JavaScript para funcionalidades do mapa.
 - `startup/` — Scripts de inicialização do banco de dados e carregamento de dados:
   - `db_initialization.py` — Inicialização e gerenciamento do container CouchDB via Docker.
   - `data_initialization.py` — Carregamento e inserção dos dados no banco.
@@ -24,6 +32,7 @@ Repositório para análise e consulta de desastres naturais utilizando FastAPI, 
   - couchdb
   - docker
   - fastapi[standard]
+  - jinja2
   - openpyxl
   - pandas
   - plotly

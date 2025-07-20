@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mapa de Desastres Naturais</title>
+    <link rel="stylesheet" href="/static/css/map.css">
+</head>
+<body>
+    <div class="container">
+        <div class="instructions">
+            <h3>📋 Como usar o mapa:</h3>
+            <p><strong>Clique em qualquer país</strong> para ver as consultas disponíveis para aquele país específico.</p>
+            <p>O popup mostrará todas as 10 consultas possíveis com seus respectivos endpoints e parâmetros.</p>
+        </div>
+        
+        {{ plotly_html | safe }}
+    </div>
+    
+    <!-- Popup Modal -->
+    <div id="countryPopup" class="popup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h2 class="popup-title" id="popupTitle">Consultas Disponíveis</h2>
+                <span class="close" onclick="closePopup()">&times;</span>
+            </div>
+            <ul class="query-list" id="queryList">
+                <!-- Queries serão inseridas aqui via JavaScript -->
+            </ul>
+        </div>
+    </div>
+    
+    <script src="/static/js/map.js"></script>
+</body>
+</html> 

@@ -1,12 +1,14 @@
 from fastapi import Depends, FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 import plotly.graph_objs as go
 import plotly.io as pio
 import couchdb
 from startup.db_initialization import start_db, stop_db
 from startup.data_initialization import load_data
 from queries_router import router
+from map_router import router as map_router
 
 
 # lifespan hook for app
@@ -27,7 +29,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+# Configurar arquivos estáticos
+app.mount("/static", StaticFiles(directory="templates/static"), name="static")
+
 app.include_router(router)
+app.include_router(map_router)
 
 # @app.get("/plot", response_class=HTMLResponse)
 # def plot_example(db: couchdb.Database = Depends(get_db)):
