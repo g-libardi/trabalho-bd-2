@@ -1,98 +1,211 @@
 // Dados das consultas disponíveis
 const queries = [
     {
-        title: "Total de Desastres por País",
-        description: "Conta quantos desastres existem para o país selecionado.",
+        id: "total-desastres",
+        title: "Total de Desastres",
+        description: "Número total de desastres naturais",
         endpoint: "/queries/total-desastres-por-pais",
-        params: "pais (string) - Nome do país"
+        icon: "📊"
     },
     {
-        title: "Total de Desastres por País e Ano",
-        description: "Conta desastres no país em determinado ano.",
-        endpoint: "/queries/total-desastres-por-pais-ano",
-        params: "pais (string) - Nome do país, ano (int) - Ano específico"
-    },
-    {
-        title: "Top 5 Desastres Mais Mortais",
-        description: "Retorna os 5 desastres com mais mortes no país.",
-        endpoint: "/queries/top-5-desastres-mais-mortais",
-        params: "pais (string) - Nome do país"
-    },
-    {
-        title: "Total de Pessoas Afetadas",
-        description: "Soma o total de pessoas afetadas no país.",
+        id: "pessoas-afetadas",
+        title: "Pessoas Afetadas",
+        description: "Total de pessoas afetadas pelos desastres",
         endpoint: "/queries/total-pessoas-afetadas",
-        params: "pais (string) - Nome do país"
+        icon: "👥"
     },
     {
-        title: "Total de Danos Econômicos",
-        description: "Soma o total de danos econômicos no país.",
+        id: "danos-economicos",
+        title: "Danos Econômicos",
+        description: "Valor total dos danos econômicos",
         endpoint: "/queries/total-danos-economicos",
-        params: "pais (string) - Nome do país"
+        icon: "💰"
     },
     {
+        id: "desastres-por-tipo",
         title: "Desastres por Tipo",
-        description: "Retorna dicionário {tipo: quantidade} de desastres no país.",
+        description: "Distribuição por tipo de desastre",
         endpoint: "/queries/desastres-por-tipo",
-        params: "pais (string) - Nome do país"
+        icon: "🌪️"
     },
     {
+        id: "desastres-por-grupo",
         title: "Desastres por Grupo",
-        description: "Retorna dicionário {grupo: quantidade} de desastres no país.",
+        description: "Distribuição por grupo de desastre",
         endpoint: "/queries/desastres-por-grupo",
-        params: "pais (string) - Nome do país"
+        icon: "📈"
     },
     {
+        id: "tendencia-historica",
         title: "Tendência Histórica",
-        description: "Retorna dict {ano: total de desastres} para o país (ordem crescente ano).",
+        description: "Evolução dos desastres ao longo do tempo",
         endpoint: "/queries/tendencia-historica",
-        params: "pais (string) - Nome do país"
+        icon: "📅"
     },
     {
-        title: "Lista de Desastres Filtrada",
-        description: "Retorna lista de documentos filtrados por país, grupo, tipo e ano (opcionais).",
-        endpoint: "/queries/lista-desastres-filtrada",
-        params: "pais (string) - Nome do país, grupo (string, opcional), tipo (string, opcional), ano (int, opcional)"
-    },
-    {
-        title: "Exportar Dados JSON",
-        description: "Retorna lista de docs para exportar em JSON (apenas do país).",
-        endpoint: "/queries/exportar-dados-json",
-        params: "pais (string) - Nome do país"
+        id: "top-mortais",
+        title: "Top 5 Mais Mortais",
+        description: "Os 5 desastres com mais vítimas fatais",
+        endpoint: "/queries/top-5-desastres-mais-mortais",
+        icon: "💀"
     }
 ];
 
 // Função para abrir o popup
-function openPopup(countryName) {
+async function openPopup(countryName) {
     const popup = document.getElementById('countryPopup');
     const popupTitle = document.getElementById('popupTitle');
     const queryList = document.getElementById('queryList');
     
     // Atualizar título do popup
-    popupTitle.textContent = `Consultas Disponíveis para: ${countryName}`;
+    popupTitle.textContent = `${countryName}`;
     
     // Limpar lista anterior
     queryList.innerHTML = '';
     
-    // Adicionar cada consulta à lista
-    queries.forEach(query => {
-        const li = document.createElement('li');
-        li.className = 'query-item';
-        
-        const endpointWithParams = query.endpoint + '?pais=' + encodeURIComponent(countryName);
-        
-        li.innerHTML = `
-            <div class="query-title">${query.title}</div>
-            <div class="query-description">${query.description}</div>
-            <div class="query-endpoint">${endpointWithParams}</div>
-            <div class="query-params"><strong>Parâmetros:</strong> ${query.params}</div>
-        `;
-        
-        queryList.appendChild(li);
-    });
+    // Mostrar loading
+    queryList.innerHTML = '<div class="loading">Carregando dados do país...</div>';
     
     // Mostrar popup
     popup.style.display = 'block';
+    
+    try {
+        // Buscar dados principais do país
+        const totalDesastresResponse = await fetch(`/queries/total-desastres-por-pais?pais=${encodeURIComponent(countryName)}`);
+        const totalDesastres = await totalDesastresResponse.json();
+        
+        const pessoasAfetadasResponse = await fetch(`/queries/total-pessoas-afetadas?pais=${encodeURIComponent(countryName)}`);
+        const pessoasAfetadas = await pessoasAfetadasResponse.json();
+        
+        const danosEconomicosResponse = await fetch(`/queries/total-danos-economicos?pais=${encodeURIComponent(countryName)}`);
+        const danosEconomicos = await danosEconomicosResponse.json();
+        
+        // Limpar loading e mostrar dados principais
+        queryList.innerHTML = `
+            <div class="country-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value">${totalDesastres.total || 0}</div>
+                    <div class="stat-label">Total de Desastres</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value">${formatNumber(pessoasAfetadas.total_afetados || 0)}</div>
+                    <div class="stat-label">Pessoas Afetadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-value">${formatCurrency(danosEconomicos.total_danos || 0)}</div>
+                    <div class="stat-label">Danos Econômicos</div>
+                </div>
+            </div>
+            <div class="queries-section">
+                <h3>📋 Consultas Disponíveis</h3>
+                <div class="queries-grid">
+                    ${queries.map(query => `
+                        <div class="query-card" onclick="executeQuery('${query.id}', '${countryName}')">
+                            <div class="query-icon">${query.icon}</div>
+                            <div class="query-title">${query.title}</div>
+                            <div class="query-description">${query.description}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+    } catch (error) {
+        queryList.innerHTML = '<div class="error">Erro ao carregar dados do país. Tente novamente.</div>';
+        console.error('Erro ao carregar dados:', error);
+    }
+}
+
+// Função para formatar números grandes
+function formatNumber(num) {
+    if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toString();
+}
+
+// Função para formatar moeda
+function formatCurrency(amount) {
+    if (amount >= 1000000000) {
+        return '$' + (amount / 1000000000).toFixed(1) + 'B';
+    } else if (amount >= 1000000) {
+        return '$' + (amount / 1000000).toFixed(1) + 'M';
+    } else if (amount >= 1000) {
+        return '$' + (amount / 1000).toFixed(1) + 'K';
+    }
+    return '$' + amount.toString();
+}
+
+// Função para executar consultas
+async function executeQuery(queryId, countryName) {
+    const query = queries.find(q => q.id === queryId);
+    if (!query) return;
+    
+    try {
+        const response = await fetch(`${query.endpoint}?pais=${encodeURIComponent(countryName)}`);
+        const data = await response.json();
+        
+        // Mostrar resultado em um modal
+        showQueryResult(query.title, data);
+        
+    } catch (error) {
+        console.error('Erro ao executar consulta:', error);
+        alert('Erro ao executar consulta. Tente novamente.');
+    }
+}
+
+// Função para mostrar resultado da consulta
+function showQueryResult(title, data) {
+    const modal = document.createElement('div');
+    modal.className = 'result-modal';
+    
+    let content = '';
+    
+    // Formatar dados baseado no tipo de consulta
+    if (title === 'Total de Desastres') {
+        content = `<div class="result-value">${data.total}</div>`;
+    } else if (title === 'Pessoas Afetadas') {
+        content = `<div class="result-value">${formatNumber(data.total_afetados)}</div>`;
+    } else if (title === 'Danos Econômicos') {
+        content = `<div class="result-value">${formatCurrency(data.total_danos)}</div>`;
+    } else if (title === 'Desastres por Tipo' || title === 'Desastres por Grupo') {
+        content = '<div class="result-chart">';
+        for (const [key, value] of Object.entries(data)) {
+            content += `<div class="chart-item"><span class="chart-label">${key}</span><span class="chart-value">${value}</span></div>`;
+        }
+        content += '</div>';
+    } else if (title === 'Tendência Histórica') {
+        content = '<div class="result-chart">';
+        for (const [year, count] of Object.entries(data)) {
+            content += `<div class="chart-item"><span class="chart-label">${year}</span><span class="chart-value">${count}</span></div>`;
+        }
+        content += '</div>';
+    } else if (title === 'Top 5 Mais Mortais') {
+        content = '<div class="result-list">';
+        data.top_5.forEach((item, index) => {
+            content += `<div class="list-item"><span class="list-rank">${index + 1}</span><span class="list-value">${item[1]} mortes</span></div>`;
+        });
+        content += '</div>';
+    }
+    
+    modal.innerHTML = `
+        <div class="result-content">
+            <div class="result-header">
+                <h2>${title}</h2>
+                <span class="close" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</span>
+            </div>
+            <div class="result-body">
+                ${content}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
 }
 
 // Função para fechar o popup
