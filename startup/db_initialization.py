@@ -64,7 +64,7 @@ def start_db() -> CouchDBConfig:
             if response.status_code == 200:
                 print("✅ CouchDB is up and running!")
                 return _config
-        except requests.exceptions.ConnectionError:
+        except Exception as e:
             time.sleep(1) # Wait a second before retrying
             
     # If the loop finishes without returning, it timed out
